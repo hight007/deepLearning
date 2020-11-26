@@ -167,6 +167,19 @@ class Menu extends Component {
                   </li>
                   <li className="nav-item">
                     <Link
+                      to="/deeplearning/uploadTrainingImg"
+                      className={
+                        pathname === "/deeplearning/uploadTrainingImg"
+                          ? "nav-link active"
+                          : "nav-link"
+                      }
+                    >
+                      <i className="far fa-circle nav-icon" />
+                      <p>Upload training images</p>
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link
                       to="/deeplearning/modelTraining"
                       className={
                         pathname === "/deeplearning/modelTraining"
@@ -176,6 +189,19 @@ class Menu extends Component {
                     >
                       <i className="far fa-circle nav-icon" />
                       <p>Model training</p>
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link
+                      to="/deeplearning/createModels"
+                      className={
+                        pathname === "/deeplearning/createModels"
+                          ? "nav-link active"
+                          : "nav-link"
+                      }
+                    >
+                      <i className="far fa-circle nav-icon" />
+                      <p>Create training models</p>
                     </Link>
                   </li>
                 </ul>

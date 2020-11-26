@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { Annotator } from 'image-labeler-react';
 import * as moment from "moment";
 import Zoom from "react-medium-image-zoom";
-import { httpClient } from "../../../utils/HttpClient";
-import { apiUrl, OK, server } from '../../../constants';
+import { apiUrl_training, OK, server } from '../../../constants';
 import Swal from 'sweetalert2';
 import join from "url-join";
 import { Link } from 'react-router-dom';
+import Axios from 'axios';
 
 class ModelTraining extends Component {
 
@@ -18,16 +18,25 @@ class ModelTraining extends Component {
       subLabelNames: [],
       startDate: this.setDate(this.addDay(new Date(), 0)),
       toDate: this.setDate(this.addDay(new Date(), 1)),
+      status: 'unTrain',
+      modelsName: 'All',
+      modelsNameList: []
     }
   }
 
   async componentDidMount() {
+    if (this.state.modelsNameList.length <= 0) {
+
+      let modelsNameList = await Axios.get(join(apiUrl_training, server.MODELS_NAME_URL))
+      await this.setState({ modelsNameList: modelsNameList.data.modelsName })
+      console.log(this.state.modelsNameList);
+    }
 
   }
 
   trainingDataSearch = async () => {
     try {
-      let resultBackend = await httpClient.get(`${server.MODELS_TRAINING_SEARCH_URL}/startDate=${this.state.startDate}&toDate=${this.state.toDate}`);
+      let resultBackend = await Axios.get(join(apiUrl_training, `${server.MODELS_TRAINING_SEARCH_URL}/startDate=${this.state.startDate}&toDate=${this.state.toDate}&status=${this.state.status}&modelsName=${this.state.modelsName}`));
       console.log(resultBackend.data);
       if (resultBackend.data.api_result === OK) {
         let subLabelNames = Object.getOwnPropertyNames(
@@ -58,18 +67,19 @@ class ModelTraining extends Component {
           <tr key={item.id} role="row" className="odd">
             <td>{item.id}</td>
             <td>{item.status}</td>
-            <td>{moment(item.createdAt).utc().format("ddd DD-MMM-Y") + ' ' + moment(item.createdAt).utc().format("HH:mm:ss")}</td>
-            <td>{moment(item.updatedAt).utc().format("ddd DD-MMM-Y") + ' ' + moment(item.updatedAt).utc().format("HH:mm:ss")}</td>
+            <td>{item.modelsName}</td>
+            <td>{moment(item.createdAt).utc().format("ddd DD-MMM-Y") + ' ' + moment(item.createdAt).format("HH:mm:ss")}</td>
+            <td>{moment(item.updatedAt).utc().format("ddd DD-MMM-Y") + ' ' + moment(item.updatedAt).format("HH:mm:ss")}</td>
             <td>
               <Zoom>
                 <img
                   style={{ maxHeight: 100, marginLeft: 5 }}
-                  src={join(apiUrl, `${server.MODELS_TRAINING_URL}/${item.id}`)}
+                  src={join(apiUrl_training, `${server.MODELS_TRAINING_URL}/${item.id}`)}
                 />
               </Zoom>
             </td>
             <td>
-              <Link to={`/deeplearning/imagesLabels/${item.id}`}>
+              <Link to={`/deeplearning/imagesLabels/${item.id}&${item.modelsName}`}>
                 <button className="btn btn-block btn-primary">Label image</button>
               </Link>
             </td>
@@ -78,7 +88,6 @@ class ModelTraining extends Component {
       }
     } catch (error) { }
   };
-
 
   renderTable = () => {
     if (this.state.data != null) {
@@ -130,9 +139,29 @@ class ModelTraining extends Component {
     return myDate;
   };
 
+  renderModelsNameSelect = () => {
+    if (this.state.modelsNameList.length > 0) {
+      return this.state.modelsNameList.map((item) => (
+        <option value={item}>{item}</option>
+      ))
+    }
+  }
+
+  downloadArchivedModels = () => {
+    if (this.state.modelsName !== 'All') {
+      window.open(join(apiUrl_training, server.DOWNLOAD_ARCHIVED_MODELS_URL, `/modelsName=${this.state.modelsName}`));
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Oops...',
+        text: 'Please select models name',
+      })
+    }
+  }
+
   render() {
     return (
-      <div className="content-wrapper " id="wrapper">
+      <div className="content-wrapper" id="wrapper">
         <div className="content-header">
           <div className="container-fluid">
             <div className="row mb-2">
@@ -172,7 +201,39 @@ class ModelTraining extends Component {
                       }}
                     />
                   </div>
-                  <div className="col-sm-12" style={{ marginTop: 10 }}>
+                  <div className="col-sm-6" style={{ overflow: "auto" }}>
+                    <label>Models : </label>
+                    <select value={this.state.modelsName} class="form-control" onChange={(e) => {
+                      this.setState({ modelsName: e.target.value });
+                    }}>
+                      <option value="All">----All----</option>
+                      {this.renderModelsNameSelect()}
+                    </select>
+                  </div>
+
+                  <div className="col-sm-6" style={{ overflow: "auto" }}>
+                    <label>Status : </label>
+                    <select value={this.state.status} class="form-control" onChange={(e) => {
+                      this.setState({ status: e.target.value });
+                    }}>
+                      <option value="All">----All----</option>
+                      <option value="unTrain">unTrain</option>
+                      <option value="Trained">Trained</option>
+                    </select>
+                  </div>
+                  <div className="col-sm-6" style={{ marginTop: 10 }}>
+                    <button
+                      type="submit"
+                      className="btn btn-block btn-success"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        this.downloadArchivedModels()
+                      }}
+                    >
+                      Download achieved XML file
+                    </button>
+                  </div>
+                  <div className="col-sm-6" style={{ marginTop: 10 }}>
                     <button
                       type="submit"
                       className="btn btn-block btn-primary"
@@ -181,10 +242,6 @@ class ModelTraining extends Component {
                         this.trainingDataSearch();
                       }}
                     >
-                      {/* <img
-                        style={{ width: 15, marginRight: 5 }}
-                        src="/images/Search.gif"
-                      /> */}
                       Find training images
                     </button>
                   </div>

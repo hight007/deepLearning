@@ -55,7 +55,8 @@ export const UPLOAD_PHOTO_FAIL_MESSAGE =
   "An error has occurred. The photo was unable to upload.";
 
 export const apiUrl = "http://10.121.42.48:5000/api/deepLearning/";
-export const imageUrl = "http://10.121.42.48:5000/";
+export const apiUrl_training = "http://10.121.42.48:5001/api/models_training/";
+// export const apiUrl_training = "http://10.121.50.157:5001/api/models_training/";
 
 // export const apiUrl = "http://192.168.0.10:5000/api/deepLearning/";
 // export const imageUrl = "http://192.168.0.10:5000/";
@@ -74,12 +75,20 @@ export const server = {
   VERIFY_EMAIL_URL: `manage_user/verifyEmail`,
   DIVISIONCODE_URL: `manage_master/division`,
   PLANTCODE_URL: `manage_master/plantCode`,
-  DEFECT_URL:`deepLearning/defect`,
-  DEFECTS_SEARCH_URL:`deepLearning/defectsSearch`,
-  PRODUCTION_RESULT_URL:'deepLearning/productionResult',
-  MODELS_TRAINING_URL: `deepLearning/trainingData`,
-  MODELS_TRAINING_SEARCH_URL: `deepLearning/trainingDataSearch`,
-  LABELED_URL: `images_labels/labeled`
+  DEFECT_URL: `deepLearning/defect`,
+  DEFECTS_SEARCH_URL: `deepLearning/defectsSearch`,
+  PRODUCTION_RESULT_URL: 'deepLearning/productionResult',
+
+  MODELS_TRAINING_URL: `models_training/trainingData`,
+  MODELS_TRAINING_SEARCH_URL: `models_training/trainingDataSearch`,
+  LABELED_URL: `images_labels/labeled`,
+  MODELS_NAME_URL: 'images_labels/modelsList',
+  DOWNLOAD_ARCHIVED_MODELS_URL: 'images_labels/archivedModels',
+
+  MODELS_LABEL_TAG_URL:'models_training/modelsList',
+  LIST_LABEL_TAG_URL:'models_training/listLabelTag',
+  NEXT_LABEL_URL:'images_labels/nextLabel',
+  PREVIOUS_LABEL_URL: 'images_labels/previousLabel',
 };
 
 export const key = {

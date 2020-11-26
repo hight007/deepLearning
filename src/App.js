@@ -17,7 +17,9 @@ import defectSearch from "./components/productionResult/defectSearch/defectSearc
 import meaning from "./components/deepLearning/meaning/meaning";
 import modelTraining from './components/modelsTraining/modelTraining/modelTraining'
 import imagesLabels from "./components/modelsTraining/imageLabels/imageLabels";
-
+import downloadTrainingXML from "./components/modelsTraining/downloadTrainingXML/downloadTrainingXML";
+import uploadTrainingImg from "./components/modelsTraining/uploadTrainingImg/uploadTrainingImg";
+import createModels from './components/modelsTraining/createModels'
 // master
 import manage_divisionCode from "./components/manage_master/divisionCode/divisionCode";
 import create_divisionCode from "./components/manage_master/create-divisionCode/create-divisionCode";
@@ -94,8 +96,8 @@ const SecuredRoute = ({ component: Component, ...rest }) => (
       isLoggedIn() === true && isLoginTimeOut(4, "h") === false ? (
         <Component {...props} />
       ) : (
-        <Redirect to="/login" />
-      )
+          <Redirect to="/login" />
+        )
     }
   />
 );
@@ -108,11 +110,11 @@ const SecuredLVRoute = ({ component: Component, ...rest }) => (
         isPowerUser() === true ? (
           <Component {...props} />
         ) : (
-          <Redirect to="/home" />
-        )
+            <Redirect to="/home" />
+          )
       ) : (
-        <Redirect to="/login" />
-      )
+          <Redirect to="/login" />
+        )
     }
   />
 );
@@ -176,15 +178,27 @@ class App extends Component {
               path="/productionResult/defectSearch"
               component={defectSearch}
             />
-            
+
             {/* deelLearning */}
             <SecuredRoute
               path="/deeplearning/modelTraining"
               component={modelTraining}
             />
             <SecuredRoute
-              path="/deeplearning/imagesLabels/:id"
+              path="/deeplearning/imagesLabels/:id&:modelsName"
               component={imagesLabels}
+            />
+            <SecuredRoute
+              path="/deeplearning/downloadTrainingXML"
+              component={downloadTrainingXML}
+            />
+            <SecuredRoute
+              path="/deeplearning/uploadTrainingImg"
+              component={uploadTrainingImg}
+            />
+            <SecuredRoute
+              path="/deeplearning/createModels"
+              component={createModels}
             />
             <SecuredRoute
               path="/deeplearning/meaning"
